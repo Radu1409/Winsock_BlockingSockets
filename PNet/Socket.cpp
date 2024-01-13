@@ -71,7 +71,7 @@ namespace PNet
 				int error = WSAGetLastError();
 				return PResult::P_NotYetImplemented;
 			}
-		}
+		} 
 		if (SetSocketOption(SocketOption::TCP_NoDelay, TRUE) != PResult::P_Success)
 		{
 			return PResult::P_NotYetImplemented;
