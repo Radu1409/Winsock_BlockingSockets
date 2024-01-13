@@ -9,6 +9,7 @@ int main()
 	{
 		std::cout << "Winsock api successfully initialized." << std::endl;
 
+
 		PNet::IPEndpoint test("192.168.0.2", 8080);
 		if (test.GetIPVersion() == PNet::IPVersion::IPv4)
 		{
