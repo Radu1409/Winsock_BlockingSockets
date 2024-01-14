@@ -24,6 +24,29 @@ namespace PNet
 				return;
 			}
 		}
+		//Attempt to resolve hostname to ipv4 address
+		addrinfo hints = {}; //hints will filter the results we get back for getaddrinfo
+		hints.ai_family = AF_INET; // ipv4 addresses only
+		addrinfo * hostinfo = nullptr;
+		result = getaddrinfo(ip, NULL, &hints, &hostinfo);
+		if (result == 0)
+		{
+			sockaddr_in *host_addr = reinterpret_cast<sockaddr_in*>(hostinfo->ai_addr);
+			//host_addr->sin_addr.S_un.S_addr
+			ip_string.resize(16);
+			inet_ntop(AF_INET, &host_addr->sin_addr, &ip_string[0], 16);
+
+			hostname = ip;
+
+			ULONG ip_long = host_addr->sin_addr.S_un.S_addr;
+			ip_bytes.resize(sizeof(ULONG));
+			memcpy(&ip_long, &ip_bytes[0], sizeof(ULONG));
+
+			ipversion = IPVersion::IPv4;
+
+			freeaddrinfo(hostinfo);
+			return;
+		}
 
 	}
 
