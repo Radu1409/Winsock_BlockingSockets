@@ -15,6 +15,7 @@ namespace PNet
 
 		PResult Create();
 		PResult Close();
+		PResult Bind(IPEndpoint endpoint);
 		SocketHandle GetHandle();
 		IPVersion GetIPVersion();
 	private:

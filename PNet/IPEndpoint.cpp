@@ -1,5 +1,6 @@
 #include "IPEndpoint.h"
 #include <WS2tcpip.h>
+#include <assert.h>
 
 namespace PNet
 {
@@ -73,6 +74,16 @@ namespace PNet
 	unsigned short IPEndpoint::GetPort()
 	{
 		return port;
+	}
+
+	sockaddr_in IPEndpoint::GetSockaddrIPv4()
+	{
+		assert(ipversion == IPVersion::IPv4);
+		sockaddr_in addr = {};
+		addr.sin_family = AF_INET;
+		memcpy(&addr.sin_addr, &ip_bytes[0], sizeof(ULONG));
+		addr.sin_port = htons(port);
+		return addr;
 	}
 
 }
