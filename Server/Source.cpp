@@ -33,13 +33,13 @@ int main()
 		if (socket.Create() == PNet::PResult::P_Success)
 		{
 			std::cout << "Socket successfully created." << std::endl;
-			if (socket.Bind(PNet::IPEndpoint("127.0.0.1", 4790)) == PNet::PResult::P_Success)
+			if (socket.Listen(PNet::IPEndpoint("127.0.0.1", 4790)) == PNet::PResult::P_Success)
 			{
-				std::cout << "Socket successfully bound to port 4790" << std::endl;
+				std::cout << "Socket successfully listening on port 4790" << std::endl;
 			}
 			else
 			{
-				std::cerr << "Failed to bind socket to port 4790." << std::endl;
+				std::cerr << "Failed to listen on port 4790." << std::endl;
 			}
 			socket.Close();
 		}
