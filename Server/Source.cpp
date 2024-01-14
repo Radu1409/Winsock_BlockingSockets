@@ -36,6 +36,16 @@ int main()
 			if (socket.Listen(PNet::IPEndpoint("127.0.0.1", 4790)) == PNet::PResult::P_Success)
 			{
 				std::cout << "Socket successfully listening on port 4790" << std::endl;
+				PNet::Socket newConnection;
+				if (socket.Accept(newConnection) == PNet::PResult::P_Success)
+				{
+					std::cout << "New connection accepted." << std::endl;
+					newConnection.Close();
+				}
+				else
+				{
+					std::cerr << "Failed to accept new connection." << std::endl;
+				}
 			}
 			else
 			{
