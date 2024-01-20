@@ -21,6 +21,9 @@ namespace PNet
 		PResult Connect(IPEndpoint endpoint);
 		PResult Send(void* data, int numberOfBytes, int& bytesSent);
 		PResult Recv(void* destionation, int numberOfBytes, int& bytesReceived);
+		PResult SendAll(void* data, int numberOfBytes);
+		PResult RecvAll(void* destionation, int numberOfBytes);
+
 		SocketHandle GetHandle();
 		IPVersion GetIPVersion();
 	private:

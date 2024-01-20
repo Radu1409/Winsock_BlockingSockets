@@ -18,11 +18,10 @@ int main()
 				std::cout << "Successfully connected to server!" << std::endl;
 				char buffer[256];
 				strcpy_s(buffer, "Hello world from client!\0");
-				int bytesSent = 0;
 				int result = PNet::PResult::P_Success;
 				while (result == PNet::PResult::P_Success)
 				{
-					result = socket.Send(buffer, 256, bytesSent);
+					result = socket.SendAll(buffer, 256);
 					std::cout << "Attempting to send chunk of data..." << std::endl;
 					Sleep(500);
 				}
