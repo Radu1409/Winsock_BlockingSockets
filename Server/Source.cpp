@@ -40,6 +40,18 @@ int main()
 				if (socket.Accept(newConnection) == PNet::PResult::P_Success)
 				{
 					std::cout << "New connection accepted." << std::endl;
+
+					char buffer[256];
+					int bytesReceived = 0;
+					int result = PNet::PResult::P_Success;
+					while (result == PNet::PResult::P_Success)
+					{
+						result = newConnection.Recv(buffer, 256, bytesReceived);
+						if (result != PNet::PResult::P_Success)
+							break;
+						std::cout << buffer << std::endl;
+					}
+
 					newConnection.Close();
 				}
 				else
