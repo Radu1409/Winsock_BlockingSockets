@@ -9,11 +9,11 @@ int main()
 	if (PNet::Network::Initialize())
 	{
 		std::cout << "Winsock api successfully initialized." << std::endl;
-		PNet::Socket socket;
+		PNet::Socket socket(PNet::IPVersion::IPv6);
 		if (socket.Create() == PNet::PResult::P_Success)
 		{
 			std::cout << "Socket successfully created." << std::endl;
-			if (socket.Connect(PNet::IPEndpoint("127.0.0.1", 4790)) == PNet::PResult::P_Success)
+			if (socket.Connect(PNet::IPEndpoint("::1", 4790)) == PNet::PResult::P_Success)
 			{
 				std::cout << "Successfully connected to server!" << std::endl;
 

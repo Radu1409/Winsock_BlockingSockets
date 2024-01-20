@@ -58,11 +58,11 @@ int main()
 		{
 			std::cerr << "This is not an ipv4 address." << std::endl;
 		}*/
-		PNet::Socket socket;
+		PNet::Socket socket(PNet::IPVersion::IPv6);
 		if (socket.Create() == PNet::PResult::P_Success)
 		{
 			std::cout << "Socket successfully created." << std::endl;
-			if (socket.Listen(PNet::IPEndpoint("127.0.0.1", 4790)) == PNet::PResult::P_Success)
+			if (socket.Listen(PNet::IPEndpoint("::1", 4790)) == PNet::PResult::P_Success)
 			{
 				std::cout << "Socket successfully listening on port 4790" << std::endl;
 				PNet::Socket newConnection;
