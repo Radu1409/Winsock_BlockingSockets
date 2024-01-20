@@ -41,14 +41,27 @@ int main()
 				{
 					std::cout << "New connection accepted." << std::endl;
 
-					char buffer[256];
+					std::string buffer = "";
 					int result = PNet::PResult::P_Success;
 					while (result == PNet::PResult::P_Success)
 					{
-						result = newConnection.RecvAll(buffer, 256);
+						uint32_t bufferSize = 0;
+						result = newConnection.RecvAll(&bufferSize, sizeof(uint32_t));
 						if (result != PNet::PResult::P_Success)
 							break;
-						std::cout << buffer << std::endl;
+
+						bufferSize = ntohl(bufferSize);
+
+						if (bufferSize > PNet::g_MaxPacketSize)
+							break;
+
+
+						buffer.resize(bufferSize);
+						result = newConnection.RecvAll(&buffer[0], bufferSize);
+						if (result != PNet::PResult::P_Success)
+							break;
+
+						std::cout << "[" << bufferSize << "] - " << buffer << std::endl;
 					}
 
 					newConnection.Close();

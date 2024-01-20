@@ -16,12 +16,23 @@ int main()
 			if (socket.Connect(PNet::IPEndpoint("127.0.0.1", 4790)) == PNet::PResult::P_Success)
 			{
 				std::cout << "Successfully connected to server!" << std::endl;
-				char buffer[256];
-				strcpy_s(buffer, "Hello world from client!\0");
-				int result = PNet::PResult::P_Success;
-				while (result == PNet::PResult::P_Success)
+
+				std::string buffer = "";
+				buffer.resize(PNet::g_MaxPacketSize + 1);
+				memset(&buffer[0], 'A', PNet::g_MaxPacketSize + 1);
+				while (true)
 				{
-					result = socket.SendAll(buffer, 256);
+					uint32_t bufferSize = buffer.size();
+					bufferSize = htonl(bufferSize);
+					int result = socket.SendAll(&bufferSize, sizeof(uint32_t));
+					if (result != PNet::PResult::P_Success)
+						break;
+
+					
+					result = socket.SendAll(buffer.data(), buffer.size());
+					if (result != PNet::PResult::P_Success)
+						break;
+
 					std::cout << "Attempting to send chunk of data..." << std::endl;
 					Sleep(500);
 				}
