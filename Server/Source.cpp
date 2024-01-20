@@ -41,7 +41,7 @@ int main()
 				{
 					std::cout << "New connection accepted." << std::endl;
 
-					std::string string1, string2;
+					std::string string1, string2, string3;
 					PNet::Packet packet;
 					while (true)
 					{
@@ -50,7 +50,15 @@ int main()
 						if (result != PNet::PResult::P_Success)
 							break;
 
-						packet >> string1 >> string2;
+						try
+						{
+							packet >> string1 >> string2 >> string3;
+						}
+						catch (PNet::PacketException& exception)
+						{
+							std::cout << exception.what() << std::endl;
+							break;
+						}
 						std::cout << string1 << std::endl;
 						std::cout << string2 << std::endl;
 					}

@@ -3,6 +3,7 @@
 #include <vector>
 #include <winsock.h>
 #include <string>
+#include "PacketException.h"
 
 namespace PNet
 {
