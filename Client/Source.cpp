@@ -17,12 +17,29 @@ int main()
 			{
 				std::cout << "Successfully connected to server!" << std::endl;
 
-				PNet::Packet packet;
-				packet << std::string("This is the first string!");
-				packet << std::string("This is the second string!");
+				PNet::Packet stringPacket(PNet::PacketType::PT_ChatMessage);
+				stringPacket << std::string("This is my string packet!");
+
+				PNet::Packet integersPacket(PNet::PacketType::PT_IntegerArray);
+				uint32_t arraySize = 6;
+				uint32_t integerArray[6] = { 2, 5, 7, 1, 2, 9 };
+				integersPacket << arraySize;
+				for (auto integer : integerArray)
+				{
+					integersPacket << integer;
+				}
 				while (true)
 				{
-					PNet::PResult result = socket.Send(packet);
+					PNet::PResult result;
+
+					if (rand() % 2 == 0)
+					{
+						result = socket.Send(stringPacket);
+					}
+					else
+					{
+						result = socket.Send(integersPacket);
+					}
 					if (result != PNet::PResult::P_Success)
 						break;
 
