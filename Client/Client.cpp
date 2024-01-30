@@ -16,6 +16,7 @@ bool Client::Connect(IPEndpoint ip)
 			std::cout << "Socket successfully created." << std::endl;
 			if (socket.Connect(ip) == PNet::PResult::P_Success)
 			{
+				isConnected = true;
 				std::cout << "Successfully connected to server!" << std::endl;
 				return true;
 				
