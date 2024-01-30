@@ -42,7 +42,7 @@ bool Client::IsConnected()
 
 bool Client::Frame()
 {
-	PNet::Packet stringPacket(PNet::PacketType::PT_ChatMessage);
+	PNet::Packet stringPacket(PNet::PacketType::PT_Test);
 	stringPacket << std::string("This is my string packet!");
 
 	PNet::Packet integersPacket(PNet::PacketType::PT_IntegerArray);
