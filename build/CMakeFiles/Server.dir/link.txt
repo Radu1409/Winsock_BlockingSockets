@@ -1,0 +1,1 @@
+/usr/bin/c++ -rdynamic CMakeFiles/Server.dir/Server/Source.cpp.o CMakeFiles/Server.dir/PNet/IPEndpoint.cpp.o CMakeFiles/Server.dir/PNet/Network.cpp.o CMakeFiles/Server.dir/PNet/Packet.cpp.o CMakeFiles/Server.dir/PNet/Socket.cpp.o -o bin/Server 

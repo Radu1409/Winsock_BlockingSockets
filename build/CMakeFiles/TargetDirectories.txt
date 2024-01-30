@@ -1,0 +1,4 @@
+/home/radu/Documents/PNet/build/CMakeFiles/Server.dir
+/home/radu/Documents/PNet/build/CMakeFiles/Client.dir
+/home/radu/Documents/PNet/build/CMakeFiles/edit_cache.dir
+/home/radu/Documents/PNet/build/CMakeFiles/rebuild_cache.dir
