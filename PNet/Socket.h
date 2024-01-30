@@ -29,6 +29,7 @@ namespace PNet
 		PResult Send(Packet& packet);
 		SocketHandle GetHandle();
 		IPVersion GetIPVersion();
+		PResult SetBlocking(bool isBlocking);
 	private:
 		PResult SetSocketOption(SocketOption option, BOOL value);
 		IPVersion ipversion = IPVersion::IPv4;
