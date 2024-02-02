@@ -42,7 +42,23 @@ bool Client::IsConnected()
 
 bool Client::Frame()
 {
-	PNet::Packet stringPacket(PNet::PacketType::PT_Test);
+	Packet incomingPacket;
+	if (socket.Recv(incomingPacket) != PResult::P_Success)
+	{
+		std::cout << "Lost connection?" << std::endl;
+		isConnected = false;
+		return false;
+	}
+
+	if (!ProcessPacket(incomingPacket))
+	{
+		isConnected = false;
+		return false;
+	}
+
+	return true;
+
+	/*PNet::Packet stringPacket(PNet::PacketType::PT_Test);
 	stringPacket << std::string("This is my string packet!");
 
 	PNet::Packet integersPacket(PNet::PacketType::PT_IntegerArray);
@@ -72,6 +88,39 @@ bool Client::Frame()
 
 	std::cout << "Attempting to send chunk of data..." << std::endl;
 	Sleep(500);
-	return true;
+	return true;*/
 	
 }
+
+bool Client::ProcessPacket(Packet& packet)
+{
+	switch (packet.GetPacketType())
+	{
+	case PacketType::PT_ChatMessage:
+	{
+		std::string chatmessage;
+		packet >> chatmessage;
+		std::cout << "Chat Message: " << chatmessage << std::endl;
+		break;
+	}
+	case PacketType::PT_IntegerArray:
+	{
+		uint32_t arraySize = 0;
+		packet >> arraySize;
+		std::cout << "Array Size: " << arraySize << std::endl;
+		for (uint32_t i = 0; i < arraySize; i++)
+		{
+			uint32_t element = 0;
+			packet >> element;
+			std::cout << "Element[" << i << "] - " << element << std::endl;
+		}
+		break;
+	}
+	default:
+		std::cout << "Unrecognized packet type: " << packet.GetPacketType() << std::endl;
+		return false;
+	}
+
+	return true;
+}
+
