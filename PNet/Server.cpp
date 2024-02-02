@@ -1,5 +1,6 @@
 #include "Server.h"
 #include <iostream>
+#include "Network.h"
 
 bool Server::Initialize(IPEndpoint ip)
 {
@@ -65,12 +66,12 @@ void Server::Frame()
 
 	use_fd = master_fd;
 
-	
+
 	// In Linux environment, instead using WSAPOLL, we use poll
 	if (WSAPoll(use_fd.data(), use_fd.size(), 1) > 0)
 	{
 #pragma region listener
-		WSAPOLLFD & listeningSocketFD = use_fd[0];
+		WSAPOLLFD& listeningSocketFD = use_fd[0];
 		if (listeningSocketFD.revents & POLLRDNORM)
 		{
 			PNet::Socket newConnectionSocket;
@@ -79,16 +80,12 @@ void Server::Frame()
 			{
 				connections.emplace_back(TCPConnection(newConnectionSocket, newConnectionEndpoint));
 				TCPConnection& acceptedConnection = connections[connections.size() - 1];
-				std::cout << acceptedConnection.ToString() << " - New connection accepted." << std::endl;
+				OnConnect(acceptedConnection);
 				WSAPOLLFD newConnectionFD = {};
 				newConnectionFD.fd = newConnectionSocket.GetHandle();
 				newConnectionFD.events = POLLRDNORM | POLLWRNORM;
 				newConnectionFD.revents = 0;
 				master_fd.push_back(newConnectionFD);
-
-				std::shared_ptr<Packet> welcomeMessagePacket = std::make_shared<Packet>(PacketType::PT_ChatMessage);
-				*welcomeMessagePacket << std::string("Welcome!");
-				acceptedConnection.pm_outgoing.Append(welcomeMessagePacket);
 			}
 			else
 			{
@@ -123,12 +120,12 @@ void Server::Frame()
 
 			if (use_fd[i].revents & POLLRDNORM) //If normal data can be read without blocking
 			{
-				
+
 				int bytesReceived = 0;
 
 				if (connection.pm_incoming.currentTask == PacketManagerTask::ProcessPacketSize)
 				{
-					bytesReceived = recv(use_fd[i].fd, (char *) & connection.pm_incoming.currentPacketSize + connection.pm_incoming.currentPacketExtractionOffset, sizeof(uint16_t) - connection.pm_incoming.currentPacketExtractionOffset, 0);
+					bytesReceived = recv(use_fd[i].fd, (char*)&connection.pm_incoming.currentPacketSize + connection.pm_incoming.currentPacketExtractionOffset, sizeof(uint16_t) - connection.pm_incoming.currentPacketExtractionOffset, 0);
 				}
 				else //Process Packet Contents
 				{
@@ -189,7 +186,7 @@ void Server::Frame()
 
 			if (use_fd[i].revents & POLLWRNORM) //If normal data can be written without blocking
 			{
-				PacketManager & pm = connection.pm_outgoing;
+				PacketManager& pm = connection.pm_outgoing;
 				while (pm.HasPendingPackets())
 				{
 					if (pm.currentTask == PacketManagerTask::ProcessPacketSize) //Sending packet size
@@ -214,8 +211,8 @@ void Server::Frame()
 					}
 					else //sending packet constants
 					{
-						char * bufferPtr = &pm.Retrieve()->buffer[0];
-						int byteSent = send(use_fd[i].fd, (char*)(bufferPtr) + pm.currentPacketExtractionOffset, pm.currentPacketSize - pm.currentPacketExtractionOffset, 0);
+						char* bufferPtr = &pm.Retrieve()->buffer[0];
+						int byteSent = send(use_fd[i].fd, (char*)(bufferPtr)+pm.currentPacketExtractionOffset, pm.currentPacketSize - pm.currentPacketExtractionOffset, 0);
 						if (byteSent > 0)
 						{
 							pm.currentPacketExtractionOffset += byteSent;
@@ -228,7 +225,7 @@ void Server::Frame()
 						}
 						else
 						{
-							break; 
+							break;
 						}
 
 					}
@@ -253,10 +250,20 @@ void Server::Frame()
 
 }
 
+void Server::OnConnect(TCPConnection& newConnection)
+{
+	std::cout << newConnection.ToString() << " - New connection accepted." << std::endl;
+}
+
+void Server::OnDisconnect(TCPConnection& lostConnection, std::string reason)
+{
+	std::cout << "[" << reason << "] Connection lost: " << lostConnection.ToString() << "." << std::endl;
+}
+
 void Server::CloseConnection(int connectionIndex, std::string reason)
 {
-	TCPConnection & connection = connections[connectionIndex];
-	std::cout << "[" << reason << "] Connection lost : " << connection.ToString() << "." << std::endl;
+	TCPConnection& connection = connections[connectionIndex];
+	OnDisconnect(connection, reason);
 	master_fd.erase(master_fd.begin() + (connectionIndex + 1));
 	use_fd.erase(use_fd.begin() + (connectionIndex + 1));
 	connection.Close();
@@ -266,32 +273,7 @@ void Server::CloseConnection(int connectionIndex, std::string reason)
 
 bool Server::ProcessPacket(std::shared_ptr<PNet::Packet> packet)
 {
-	switch (packet->GetPacketType())
-	{
-	case PNet::PacketType::PT_ChatMessage:
-	{
-		std::string chatmessage;
-		*packet >> chatmessage;
-		std::cout << "ChatMessage: " << chatmessage << std::endl;
-		break;
-	}
-	case PNet::PacketType::PT_IntegerArray:
-	{
-		uint32_t arraySize = 0;
-		*packet >> arraySize;
-		std::cout << "Array Size: " << arraySize << std::endl;
-		for (uint32_t i = 0; i < arraySize; i++)
-		{
-			uint32_t element = 0;
-			*packet >> element;
-			std::cout << "Element[" << i << "] - " << element << std::endl;
-		}
-		break;
-	}
-	default:
-		std::cout << "Unrecognized packet type: " << packet->GetPacketType() << std::endl;
-		return false;
-	}
+	std::cout << "Packet received with size: " << packet->buffer.size() << std::endl;
 	return true;
 }
 
